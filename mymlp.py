@@ -44,7 +44,7 @@ class layer:
 
 
 class MLP:
-    def __init__(self, input, result_list, alpha, learning_rate, layer_num, layer_neuron_num: list, epoch = 1000000) -> None:
+    def __init__(self, input, result_list, alpha, learning_rate, layer_num, layer_neuron_num: list, step = 1000000) -> None:
         self.alpha = alpha
         self.learning_rate = learning_rate
         self.layer_num = layer_num
@@ -54,7 +54,7 @@ class MLP:
             self.layers.append(layer(layer_neuron_num[i-1],layer_neuron_num[i]))
         self.input = input
         self.result_list = result_list
-        self.compute(epoch)
+        self.compute(step)
 
     def forwardpass(self, input):#
         self.layers[0].make_output(input, self.alpha)# input에 맞춰 생성
@@ -62,7 +62,7 @@ class MLP:
         for i in range(1, self.layer_num):
             self.layers[i].make_output(self.layers[i-1].outputs, self.alpha)
         
-    def backpropagation(self, index):
+    def backpropagation(self, index):# fully-stochastic gradient
         # 마지막 층 계산하고, 은닉층을 처리한다.
         next = self.layers[-1]
         prev = self.layers[-2]
@@ -96,9 +96,9 @@ class MLP:
                         now.neurons[i][w] -= (self.learning_rate * P_m * self.input[index][w]) # if first layer
             prev_layer_Ps = copy.deepcopy(new_Ps)
 
-    def compute(self, epoch):# learning
+    def compute(self, step):# learning
         
-        for i in range(epoch):
+        for i in range(step):# fully-stochastic gradient
             index = random.randrange(0, len(self.input))
             self.forwardpass(self.input[index])
             self.backpropagation(index)
