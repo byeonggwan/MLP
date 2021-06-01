@@ -5,6 +5,7 @@ import random
 import matplotlib.pyplot as plt
 import pandas as pd
 import copy
+import time
 
 #전파 -> 입력에서 출력까지 output을 계속 만듬
 #역전파 -> 출력에서 입력까지 가중치를 업데이트함. gradient descent를 이용.
@@ -97,11 +98,13 @@ class MLP:
             prev_layer_Ps = copy.deepcopy(new_Ps)
 
     def compute(self, step):# learning
-        
+        print("Training Timer start.")
+        start = time.time()
         for i in range(step):# fully-stochastic gradient
             index = random.randrange(0, len(self.input))
             self.forwardpass(self.input[index])
             self.backpropagation(index)
+        print("Timer end. It takes: ", (time.time() - start), "seconds")
 
     def testing(self, input):
         self.forwardpass(input)
@@ -124,7 +127,6 @@ if __name__ == "__main__":
     #for i in test
     for l in test_points:
         temp = mlp.testing(l)
-        print(temp)
         if temp > 0.5:
             test_result.append(1)
         else:
@@ -136,7 +138,7 @@ if __name__ == "__main__":
     df_tst_y = pd.DataFrame(test_result, columns = ["y"])
 
     plt.scatter(df_tst['x1'], df_tst['x2'], c=df_tst_y['y'])
-    plt.savefig('test.png')
     plt.scatter(df_trn['x1'], df_trn['x2'], c=df_y['y'], cmap='rainbow')
-    plt.savefig('train.png')
+    plt.savefig('test.png')
+    print("test.png shows results.")
     
